@@ -1,8 +1,10 @@
 # DeepSeek Price Monitor
 
-A lightweight, mobile-friendly dashboard for checking DeepSeek API peak and off-peak periods in Beijing time (UTC+8). It runs entirely in the browser, with no account, API key, build step, or external data service required.
+A static, single-page tool for checking DeepSeek API peak and off-peak hours. See the current rate, countdown, weekly schedule, and Flash and Pro prices in **English** or Chinese — all in your browser, with no account or API key.
 
-**[Open the live dashboard](https://chengwq95.github.io/deepseek-monitor/)** · [Official DeepSeek pricing](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)
+**Live:** https://chengwq95.github.io/deepseek-monitor/
+
+[Official DeepSeek pricing](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)
 
 ## Weekly schedule
 
@@ -24,7 +26,7 @@ The illustrated prices are in **CNY per million tokens** and were checked agains
 - Seven-day schedule, upcoming transitions, and highlighted prices for the current period.
 - A date and time simulator with an explicit simulation indicator.
 - Optional browser notification before peak hours; simulation mode does not send notifications.
-- Responsive layout, light and dark themes, and an icon for the browser tab.
+- **EN / 中文** interface switch and responsive light and dark themes. Language and theme choices are saved in your browser.
 
 Notifications require a supported browser, permission, HTTPS or localhost, and an open page. Browser background restrictions or device sleep can delay or prevent delivery. Enable the reminder again after reopening the page.
 

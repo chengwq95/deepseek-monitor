@@ -23,6 +23,10 @@
   const DAY = 24 * HOUR;
   const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
   const pad = n => String(n).padStart(2, '0');
+  let language = 'zh';
+  const en = () => language === 'en';
+  const tr = (zh, english) => en() ? english : zh;
+  const shortWeekday = day => en() ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][day] : '周' + WEEKDAYS[day];
 
   // 北京时间当天 00:00 对应的 UTC 毫秒
   function bjMidnight(now) {
@@ -79,19 +83,24 @@
     const total = Math.max(0, Math.ceil(ms / 1000));
     const days = Math.floor(total / 86400), h = Math.floor(total % 86400 / 3600);
     const m = Math.floor(total % 3600 / 60), s = total % 60;
-    return (days ? days + '天 ' : '') + pad(h) + ':' + pad(m) + ':' + pad(s);
+    return (days ? days + (en() ? (days === 1 ? ' day ' : ' days ') : '天 ') : '') + pad(h) + ':' + pad(m) + ':' + pad(s);
   }
   function relative(ms) {
-    const min = Math.round(ms / 60000);
+    const min = Math.round(ms / 60000), h = Math.floor(min / 60), days = Math.floor(h / 24);
+    if (en()) {
+      if (min < 60) return 'in ' + min + ' min';
+      if (h < 24) return 'in ' + h + ' hr' + (min % 60 ? ' ' + (min % 60) + ' min' : '');
+      return 'in ' + days + (days === 1 ? ' day' : ' days') + (h % 24 ? ' ' + (h % 24) + ' hr' : '');
+    }
     if (min < 60) return min + ' 分钟后';
-    const h = Math.floor(min / 60);
     if (h < 24) return h + ' 小时' + (min % 60 ? ' ' + (min % 60) + ' 分' : '') + '后';
-    return Math.floor(h / 24) + ' 天' + (h % 24 ? ' ' + (h % 24) + ' 小时' : '') + '后';
+    return days + ' 天' + (h % 24 ? ' ' + (h % 24) + ' 小时' : '') + '后';
   }
   function hm(t) { const d = new Date(t + OFFSET); return pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()); }
   function formatTarget(t) {
     const d = new Date(t + OFFSET);
-    return (d.getUTCMonth() + 1) + '月' + d.getUTCDate() + '日 周' + WEEKDAYS[d.getUTCDay()] + ' ' + hm(t);
+    return en() ? (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + ' ' + shortWeekday(d.getUTCDay()) + ' ' + hm(t)
+      : (d.getUTCMonth() + 1) + '月' + d.getUTCDate() + '日 ' + shortWeekday(d.getUTCDay()) + ' ' + hm(t);
   }
   function money(v) { return '¥' + (v < 1 ? v.toFixed(2) : String(v)); }
 
@@ -122,6 +131,7 @@
 
   function buildPriceTables() {
     const grid = $('price-grid');
+    grid.replaceChildren();
     for (const model of CONFIG.models) {
       const card = el('article', 'price-card card');
       const title = el('div', 'model-title');
@@ -129,11 +139,11 @@
       const names = el('div'); names.append(el('h3', '', model.name), el('code', '', model.id));
       title.append(names);
       const table = el('table');
-      table.innerHTML = '<thead><tr><th scope="col">计费项目</th><th scope="col" class="col-off">空闲</th><th scope="col" class="col-peak">高峰</th></tr></thead>';
+      table.innerHTML = '<thead><tr><th scope="col">' + tr('计费项目','Category') + '</th><th scope="col" class="col-off">' + tr('空闲','Off-peak') + '</th><th scope="col" class="col-peak">' + tr('高峰','Peak') + '</th></tr></thead>';
       const body = el('tbody');
-      for (const [label, off, peak] of model.rows) {
+      for (const [index, [label, off, peak]] of model.rows.entries()) {
         const tr = el('tr');
-        const th = el('th', '', label); th.scope = 'row';
+        const th = el('th', '', en() ? ['Input · cache hit','Input · cache miss','Output'][index] : label); th.scope = 'row';
         tr.append(th, el('td', 'col-off', money(off)), el('td', 'col-peak', money(peak)));
         body.append(tr);
       }
@@ -141,7 +151,7 @@
       card.append(title, table);
       grid.append(card);
     }
-    $('price-checked').textContent = '空闲价格为高峰的一半。价格于 ' + CONFIG.priceCheckedOn + ' 对照官方说明核对，可能随时调整，请以官方为准。';
+    $('price-checked').textContent = en() ? 'Off-peak prices are half of peak prices. Checked against the official page on ' + CONFIG.priceCheckedOn + '; prices may change.' : '空闲价格为高峰的一半。价格于 ' + CONFIG.priceCheckedOn + ' 对照官方说明核对，可能随时调整，请以官方为准。';
   }
 
   function quickPrice(model, peak) {
@@ -162,7 +172,7 @@
       const row = el('div', 'week-row' + (d === 0 ? ' today' : '') + (info.hasPeak ? '' : ' all-off'));
       row.setAttribute('role', 'listitem');
       const label = el('div', 'week-label');
-      label.append(el('strong', '', d === 0 ? '今天' : d === 1 ? '明天' : '周' + WEEKDAYS[info.dow]),
+      label.append(el('strong', '', d === 0 ? tr('今天','Today') : d === 1 ? tr('明天','Tomorrow') : shortWeekday(info.dow)),
         el('span', '', (date.getUTCMonth() + 1) + '/' + date.getUTCDate()));
       const bar = el('div', 'week-bar');
       if (info.hasPeak) {
@@ -173,14 +183,14 @@
           bar.append(seg);
         }
       } else {
-        bar.append(el('em', 'day-tag', '周末 · 全天空闲'));
+        bar.append(el('em', 'day-tag', tr('周末 · 全天空闲','Weekend · off-peak')));
       }
       if (d === 0) {
         const marker = el('i', 'now-marker');
         marker.style.left = (state.hour / 24 * 100) + '%';
         bar.append(marker);
       }
-      const desc = info.hasPeak ? '高峰 09:00–12:00、14:00–18:00' : '周末，全天空闲';
+      const desc = info.hasPeak ? tr('高峰 09:00–12:00、14:00–18:00','Peak 09:00–12:00 and 14:00–18:00') : tr('周末，全天空闲','Weekend, off-peak all day');
       row.setAttribute('aria-label', label.textContent + '：' + desc);
       row.append(label, bar);
       grid.append(row);
@@ -195,7 +205,7 @@
       const li = el('li', toPeak ? 'to-peak' : 'to-off');
       const left = el('div');
       left.append(el('span', 'when', formatTarget(t)), el('small', '', relative(t - state.now)));
-      li.append(left, el('strong', 'tag', toPeak ? '进入高峰' : '进入空闲'));
+      li.append(left, el('strong', 'tag', toPeak ? tr('进入高峰','Peak begins') : tr('进入空闲','Off-peak begins')));
       list.append(li);
       t = nextSwitch(t);
     }
@@ -212,13 +222,13 @@
     document.body.dataset.price = peak ? 'peak' : 'off';
     document.body.classList.toggle('simulating', !live);
     $('simulation-banner').hidden = live;
-    $('top-mode').textContent = live ? '实时' : '模拟';
-    $('status-label').textContent = live ? '现在是' : '模拟时间是';
-    $('status').textContent = peak ? '高峰时段' : '空闲时段';
+    $('top-mode').textContent = live ? tr('实时','Live') : tr('模拟','Simulated');
+    $('status-label').textContent = live ? tr('现在是','Current period') : tr('模拟时间是','Simulated period');
+    $('status').textContent = peak ? tr('高峰时段','Peak hours') : tr('空闲时段','Off-peak hours');
     $('saving-pill').hidden = peak;
     $('status-note').textContent = peak
-      ? '每周规则参考高峰价。非紧急的批量任务可以等到 ' + (state.next ? hm(state.next) : '稍后') + ' 之后。'
-      : '每周规则参考空闲价，适合跑批量任务。';
+      ? (en() ? 'Weekly rule: peak rates. Off-peak begins at ' + (state.next ? hm(state.next) : 'a later time') + '.' : '每周规则参考高峰价。非紧急的批量任务可以等到 ' + (state.next ? hm(state.next) : '稍后') + ' 之后。')
+      : tr('每周规则参考空闲价，适合跑批量任务。','Weekly rule: off-peak rates.');
 
     // 当前时段进度
     if (state.prev !== null && state.next !== null) {
@@ -231,21 +241,21 @@
     $('quick-flash').textContent = quickPrice(CONFIG.models[0], peak);
     $('quick-pro').textContent = quickPrice(CONFIG.models[1], peak);
 
-    $('next-label').textContent = '距离进入' + (peak ? '空闲' : '高峰');
+    $('next-label').textContent = peak ? tr('距离进入空闲','Time until off-peak') : tr('距离进入高峰','Time until peak');
     $('countdown').textContent = state.next ? duration(state.next - now) : '—';
-    $('next-time').textContent = state.next ? formatTarget(state.next) : '暂无';
+    $('next-time').textContent = state.next ? formatTarget(state.next) : tr('暂无','Unavailable');
     $('clock').textContent = pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes()) + ':' + pad(t.getUTCSeconds());
-    $('date').textContent = t.getUTCFullYear() + '年' + (t.getUTCMonth() + 1) + '月' + t.getUTCDate() + '日 星期' + WEEKDAYS[t.getUTCDay()];
-    $('price-caption').textContent = (live ? '当前' : '模拟时间') + '适用列已高亮';
-    document.title = (peak ? '● 高峰' : '○ 空闲') + ' · ' + (state.next ? duration(state.next - now) : '') + ' | DeepSeek 时段观察';
+    $('date').textContent = en() ? shortWeekday(t.getUTCDay()) + ', ' + (t.getUTCMonth()+1) + '/' + t.getUTCDate() + '/' + t.getUTCFullYear() : t.getUTCFullYear() + '年' + (t.getUTCMonth() + 1) + '月' + t.getUTCDate() + '日 星期' + WEEKDAYS[t.getUTCDay()];
+    $('price-caption').textContent = live ? tr('当前适用列已高亮','Current column highlighted') : tr('模拟时间适用列已高亮','Simulated column highlighted');
+    document.title = (peak ? tr('● 高峰','● Peak') : tr('○ 空闲','○ Off-peak')) + ' · ' + (state.next ? duration(state.next - now) : '') + ' | ' + tr('DeepSeek 时段观察','DeepSeek Price Monitor');
 
     renderStatic(state);
 
     if (shouldNotify(state, now, Number($('reminder-minutes').value), remindersEnabled, !live,
       typeof Notification === 'undefined' ? 'unsupported' : Notification.permission, notifiedFor)) {
       notifiedFor = state.next;
-      try { new Notification('即将进入高峰时段', { body: '北京时间 ' + formatTarget(state.next) + ' 起为每周规则的高峰时段，请留意法定节假日可能不同。', icon: 'favicon.svg' }); }
-      catch (_) { $('reminder-message').textContent = '无法显示通知，请检查浏览器通知设置。'; }
+      try { new Notification(tr('即将进入高峰时段','Peak hours are approaching'), { body: en() ? 'The weekly rule switches to peak at ' + formatTarget(state.next) + ' Beijing time. Public holiday billing may differ.' : '北京时间 ' + formatTarget(state.next) + ' 起为每周规则的高峰时段，请留意法定节假日可能不同。', icon: 'favicon.svg' }); }
+      catch (_) { setReminderMessage('error'); }
     }
   }
 
@@ -261,13 +271,38 @@
     document.documentElement.dataset.theme = theme;
     const btn = $('theme-toggle');
     btn.textContent = theme === 'light' ? '☾' : '☼';
-    btn.setAttribute('aria-label', theme === 'light' ? '切换深色主题' : '切换浅色主题');
+    btn.setAttribute('aria-label', theme === 'light' ? tr('切换深色主题','Switch to dark theme') : tr('切换浅色主题','Switch to light theme')); 
     document.querySelector('meta[name="theme-color"]').content = theme === 'light' ? '#f4f3f9' : '#0b0c12';
     storage.set('monitor-theme', theme);
   }
 
+  const translations = {
+    brand:['时段观察','Price Monitor'], viewingSimulation:['正在查看模拟时间','Viewing simulated time:'], returnLive:['返回实时','Return to live'], saveHalf:['省 50%','Save 50%'], quickLabels:['输入命中 / 未命中 / 输出 · 每百万 tokens','Input hit / miss / output · per 1M tokens'], beijingTime:['北京时间','Beijing time'], weekHeading:['未来 7 天时段','Next 7 days'], legendOff:['空闲（半价）','Off-peak (half price)'], legendPeak:['高峰','Peak'], scheduleNote:['周一至周五 09:00–12:00、14:00–18:00 为高峰；其余时间及周末为空闲。不识别法定节假日，','Mon–Fri 09:00–12:00 and 14:00–18:00 are peak; other hours and weekends are off-peak. Public holidays are not included. '], learnMore:['了解详情','Learn more'], period:['。','.'], pricesHeading:['模型价格','Model prices'], priceUnit:['人民币 · 每 100 万 tokens · ','CNY · per 1M tokens · '], official:['官方价格说明 ↗','Official pricing ↗'], newWindow:['（在新窗口打开）',' (opens in a new window)'], upcomingHeading:['接下来的切换','Upcoming transitions'], toolsHeading:['规划与提醒','Planning & reminders'], viewTime:['查看指定时间','View a specific time'], inBeijing:['按北京时间','Beijing time'], year:['年','Year'], month:['月','Month'], day:['日','Day'], hour:['时','Hour'], minute:['分','Minute'], viewPeriod:['查看时段','View period'], reminderHeading:['高峰前提醒','Peak reminder'], before5:['提前 5 分钟','5 min before'], before15:['提前 15 分钟','15 min before'], before30:['提前 30 分钟','30 min before'], holidayHeading:['关于节假日','About public holidays'], holidayText:['本页只按星期计算，不识别中国法定节假日或调休。DeepSeek 官方规定法定节假日全天为空闲，所以节假日如落在周一至周五，页面会显示高峰，但实际按空闲价计费。','This page uses weekdays only and does not recognize Chinese statutory holidays or make-up workdays. DeepSeek treats statutory holidays as off-peak all day, so a weekday holiday may be shown as peak here even though actual billing is off-peak.'], footerBrand:['✦ DEEPSEEK 时段观察','✦ DEEPSEEK PRICE MONITOR'], footerPrivacy:['本地计算 · 不连接账户 · 不需要 API 密钥','Calculated locally · No account or API key required']
+  };
+  let reminderMessage = 'default';
+  function setReminderMessage(key) {
+    reminderMessage = key;
+    const messages = {default:['需允许通知并保持页面打开；仅实时模式提醒。','Allow notifications and keep this page open. Live mode only.'], off:['提醒已关闭。','Reminder disabled.'], on:['提醒已开启：请保持页面打开，仅实时模式生效。','Reminder enabled. Keep this page open; live mode only.'], unsupported:['当前环境不支持通知，请通过 HTTPS 网址打开（如 GitHub Pages）。','Notifications are unavailable here. Open the site over HTTPS.'], denied:['通知未获允许，请在浏览器设置中允许后重试。','Notifications were not allowed. Check browser settings and retry.'], error:['无法显示通知，请检查浏览器通知设置。','Could not display the notification. Check browser settings.']};
+    $('reminder-message').textContent = messages[key][en() ? 1 : 0];
+  }
+  function setLanguage(value) {
+    language = value; document.documentElement.lang = en() ? 'en' : 'zh-CN';
+    storage.set('monitor-language', value);
+    document.querySelectorAll('[data-i18n]').forEach(node => { node.textContent = translations[node.dataset.i18n][en() ? 1 : 0]; });
+    const toggle = $('language-toggle'); toggle.textContent = en() ? '中文' : 'EN'; toggle.setAttribute('aria-label', en() ? '切换到中文' : 'Switch to English');
+    $('reminder-toggle').textContent = remindersEnabled ? tr('关闭提醒','Disable reminder') : tr('开启提醒','Enable reminder');
+    setReminderMessage(reminderMessage); setTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
+    ['simulation-month','simulation-day','simulation-hour','simulation-minute'].forEach(id => {
+      const select = $(id); Array.from(select.options).forEach(option => { const suffix = {'simulation-month':'月','simulation-day':'日','simulation-hour':'时','simulation-minute':'分'}[id]; option.textContent = pad(option.value) + (en() ? '' : suffix); });
+    });
+    $('simulation-label').textContent = simulatedTime === null ? '' : formatTarget(simulatedTime);
+    buildPriceTables(); lastStaticKey = ''; render();
+  }
+
   function init() {
-    buildPriceTables();
+    language = storage.get('monitor-language') === 'en' ? 'en' : 'zh';
+    setLanguage(language);
+    $('language-toggle').addEventListener('click', () => setLanguage(en() ? 'zh' : 'en'));
     setTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
     $('theme-toggle').addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'));
 
@@ -275,7 +310,7 @@
       const field = $(id); field.replaceChildren();
       for (let n = start; n <= end; n++) {
         const option = document.createElement('option');
-        option.value = String(n); option.textContent = pad(n) + suffix; field.append(option);
+        option.value = String(n); option.textContent = pad(n) + (en() ? '' : suffix); field.append(option);
       }
       field.value = String(Math.min(Math.max(selected, start), end));
     }
@@ -307,14 +342,14 @@
     $('reminder-toggle').addEventListener('click', async () => {
       const btn = $('reminder-toggle'), msg = $('reminder-message');
       if (remindersEnabled) {
-        remindersEnabled = false; btn.textContent = '开启提醒'; btn.setAttribute('aria-pressed', 'false');
-        msg.textContent = '提醒已关闭。'; return;
+        remindersEnabled = false; btn.textContent = tr('开启提醒','Enable reminder'); btn.setAttribute('aria-pressed', 'false');
+        setReminderMessage('off'); return;
       }
-      if (!('Notification' in window) || !window.isSecureContext) { msg.textContent = '当前环境不支持通知，请通过 HTTPS 网址打开（如 GitHub Pages）。'; return; }
+      if (!('Notification' in window) || !window.isSecureContext) { setReminderMessage('unsupported'); return; }
       let permission; try { permission = await Notification.requestPermission(); } catch (_) { permission = 'denied'; }
-      if (permission !== 'granted') { msg.textContent = '通知未获允许，请在浏览器设置中允许后重试。'; return; }
-      remindersEnabled = true; notifiedFor = null; btn.textContent = '关闭提醒'; btn.setAttribute('aria-pressed', 'true');
-      msg.textContent = '提醒已开启：请保持页面打开，仅实时模式生效。'; render();
+      if (permission !== 'granted') { setReminderMessage('denied'); return; }
+      remindersEnabled = true; notifiedFor = null; btn.textContent = tr('关闭提醒','Disable reminder'); btn.setAttribute('aria-pressed', 'true');
+      setReminderMessage('on'); render();
     });
     $('reminder-minutes').addEventListener('change', () => { notifiedFor = null; render(); });
 

@@ -18,18 +18,19 @@
   <header class="topbar">
     <a class="brand" href="#main">
       <img src="favicon.svg" alt="" width="36" height="36">
-      <span><strong>时段观察</strong><small>DEEPSEEK MONITOR</small></span>
+      <span><strong data-i18n="brand">时段观察</strong><small>DEEPSEEK MONITOR</small></span>
     </a>
     <div class="top-actions">
       <span class="top-tag"><span class="live-dot" id="live-dot"></span><span id="top-mode">实时</span><i></i>UTC+8</span>
+      <button class="language-button" id="language-toggle" type="button" aria-label="Switch to English">EN</button>
       <button class="icon-button" id="theme-toggle" type="button" aria-label="切换浅色主题">☼</button>
     </div>
   </header>
 
   <main id="main">
     <div class="simulation-banner" id="simulation-banner" hidden>
-      <span>正在查看模拟时间 <strong id="simulation-label"></strong></span>
-      <button id="return-live" type="button">返回实时</button>
+      <span><span data-i18n="viewingSimulation">正在查看模拟时间</span> <strong id="simulation-label"></strong></span>
+      <button id="return-live" type="button" data-i18n="returnLive">返回实时</button>
     </div>
 
     <!-- 当前状态 -->
@@ -38,7 +39,7 @@
         <p class="kicker"><span class="pulse"></span><span id="status-label">现在是</span></p>
         <div class="status-row">
           <h1 id="status">正在计算</h1>
-          <span class="saving-pill" id="saving-pill">省 50%</span>
+          <span class="saving-pill" id="saving-pill" data-i18n="saveHalf">省 50%</span>
         </div>
         <p class="status-note" id="status-note">请稍候</p>
 
@@ -50,7 +51,7 @@
         <div class="hero-prices">
           <div class="mini-price"><span class="model-dot flash"></span><strong>Flash</strong><span id="quick-flash">—</span></div>
           <div class="mini-price"><span class="model-dot pro"></span><strong>Pro</strong><span id="quick-pro">—</span></div>
-          <p>输入命中 / 未命中 / 输出 · 每百万 tokens</p>
+          <p data-i18n="quickLabels">输入命中 / 未命中 / 输出 · 每百万 tokens</p>
         </div>
       </div>
 
@@ -59,7 +60,7 @@
         <p class="countdown" id="countdown">--:--:--</p>
         <p class="next-time" id="next-time">正在计算</p>
         <div class="clock-box">
-          <span>北京时间</span>
+          <span data-i18n="beijingTime">北京时间</span>
           <strong id="clock">--:--:--</strong>
           <small id="date">正在读取日期</small>
         </div>
@@ -72,16 +73,16 @@
       <div class="section-heading">
         <div>
           <p class="eyebrow">NEXT 7 DAYS</p>
-          <h2 id="week-heading">未来 7 天时段</h2>
+          <h2 id="week-heading" data-i18n="weekHeading">未来 7 天时段</h2>
         </div>
         <div class="legend">
-          <span><i class="swatch off"></i>空闲（半价）</span>
-          <span><i class="swatch peak"></i>高峰</span>
+          <span><i class="swatch off"></i><span data-i18n="legendOff">空闲（半价）</span></span>
+          <span><i class="swatch peak"></i><span data-i18n="legendPeak">高峰</span></span>
         </div>
       </div>
       <div class="week-grid" id="week-grid" role="list"></div>
       <div class="week-ticks" aria-hidden="true"><span></span><div class="tick-track"><span style="left:0%">00:00</span><span style="left:25%">06:00</span><span style="left:50%">12:00</span><span style="left:75%">18:00</span><span style="left:100%">24:00</span></div></div>
-      <p class="fine">周一至周五 09:00–12:00、14:00–18:00 为高峰；其余时间及周末为空闲。不识别法定节假日，<a href="#holiday-note">了解详情</a>。</p>
+      <p class="fine"><span data-i18n="scheduleNote">周一至周五 09:00–12:00、14:00–18:00 为高峰；其余时间及周末为空闲。不识别法定节假日，</span><a href="#holiday-note" data-i18n="learnMore">了解详情</a><span data-i18n="period">。</span></p>
     </section>
 
     <!-- 价格 -->
@@ -89,10 +90,10 @@
       <div class="section-heading">
         <div>
           <p class="eyebrow">MODEL PRICING</p>
-          <h2 id="prices-heading">模型价格</h2>
-          <p class="fine">人民币 · 每 100 万 tokens · <span id="price-caption">当前适用列已高亮</span></p>
+          <h2 id="prices-heading" data-i18n="pricesHeading">模型价格</h2>
+          <p class="fine"><span data-i18n="priceUnit">人民币 · 每 100 万 tokens · </span><span id="price-caption">当前适用列已高亮</span></p>
         </div>
-        <a class="official-link" href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing/" target="_blank" rel="noopener noreferrer">官方价格说明 ↗<span class="sr-only">（在新窗口打开）</span></a>
+        <a class="official-link" href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing/" target="_blank" rel="noopener noreferrer"><span data-i18n="official">官方价格说明 ↗</span><span class="sr-only" data-i18n="newWindow">（在新窗口打开）</span></a>
       </div>
       <div class="price-grid" id="price-grid"></div>
       <p class="fine" id="price-checked"></p>
@@ -102,33 +103,33 @@
     <div class="planning-grid">
       <section class="upcoming card" aria-labelledby="upcoming-heading">
         <p class="eyebrow">COMING UP</p>
-        <h2 id="upcoming-heading">接下来的切换</h2>
+        <h2 id="upcoming-heading" data-i18n="upcomingHeading">接下来的切换</h2>
         <ol id="upcoming-list" class="upcoming-list"><li>正在计算</li></ol>
       </section>
 
       <section class="tools card" aria-labelledby="tools-heading">
         <p class="eyebrow">PLANNING TOOLS</p>
-        <h2 id="tools-heading">规划与提醒</h2>
+        <h2 id="tools-heading" data-i18n="toolsHeading">规划与提醒</h2>
 
         <form class="tool-group" id="simulation-form">
-          <p class="simulation-heading">查看指定时间 <span>按北京时间</span></p>
+          <p class="simulation-heading"><span data-i18n="viewTime">查看指定时间</span> <span data-i18n="inBeijing">按北京时间</span></p>
           <div class="simulation-fields">
-            <label>年<input id="simulation-year" type="number" min="1900" max="9998" step="1" inputmode="numeric" required></label>
-            <label>月<select id="simulation-month" required></select></label>
-            <label>日<select id="simulation-day" required></select></label>
-            <label>时<select id="simulation-hour" required></select></label>
-            <label>分<select id="simulation-minute" required></select></label>
+            <label><span data-i18n="year">年</span><input id="simulation-year" type="number" min="1900" max="9998" step="1" inputmode="numeric" required></label>
+            <label><span data-i18n="month">月</span><select id="simulation-month" required></select></label>
+            <label><span data-i18n="day">日</span><select id="simulation-day" required></select></label>
+            <label><span data-i18n="hour">时</span><select id="simulation-hour" required></select></label>
+            <label><span data-i18n="minute">分</span><select id="simulation-minute" required></select></label>
           </div>
-          <div class="simulation-submit"><button type="submit">查看时段</button></div>
+          <div class="simulation-submit"><button type="submit" data-i18n="viewPeriod">查看时段</button></div>
         </form>
 
         <div class="tool-group">
-          <label for="reminder-minutes">高峰前提醒</label>
+          <label for="reminder-minutes" data-i18n="reminderHeading">高峰前提醒</label>
           <div class="tool-row">
             <select id="reminder-minutes">
-              <option value="5">提前 5 分钟</option>
-              <option value="15" selected>提前 15 分钟</option>
-              <option value="30">提前 30 分钟</option>
+              <option value="5" data-i18n="before5">提前 5 分钟</option>
+              <option value="15" selected data-i18n="before15">提前 15 分钟</option>
+              <option value="30" data-i18n="before30">提前 30 分钟</option>
             </select>
             <button id="reminder-toggle" type="button" aria-pressed="false">开启提醒</button>
           </div>
@@ -140,15 +141,15 @@
     <aside class="notice card" id="holiday-note">
       <span class="notice-icon" aria-hidden="true">i</span>
       <div>
-        <h2>关于节假日</h2>
-        <p>本页只按星期计算，不识别中国法定节假日或调休。DeepSeek 官方规定法定节假日全天为空闲，所以节假日如落在周一至周五，页面会显示高峰，但实际按空闲价计费。</p>
+        <h2 data-i18n="holidayHeading">关于节假日</h2>
+        <p data-i18n="holidayText">本页只按星期计算，不识别中国法定节假日或调休。DeepSeek 官方规定法定节假日全天为空闲，所以节假日如落在周一至周五，页面会显示高峰，但实际按空闲价计费。</p>
       </div>
     </aside>
   </main>
 
   <footer>
-    <span>✦ DEEPSEEK 时段观察</span>
-    <span>本地计算 · 不连接账户 · 不需要 API 密钥</span>
+    <span data-i18n="footerBrand">✦ DEEPSEEK 时段观察</span>
+    <span data-i18n="footerPrivacy">本地计算 · 不连接账户 · 不需要 API 密钥</span>
   </footer>
 </div>
 </body>
