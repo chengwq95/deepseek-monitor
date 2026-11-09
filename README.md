@@ -1,30 +1,47 @@
-# DeepSeek 时段观察 v2
+# DeepSeek Price Monitor
 
-无需安装或构建的静态网站。直接用浏览器打开 `index.html`，或上传到 GitHub Pages。
+A lightweight, mobile-friendly dashboard for checking DeepSeek API peak and off-peak periods in Beijing time (UTC+8). It runs entirely in the browser, with no account, API key, build step, or external data service required.
 
-## 文件
+**[Open the live dashboard](https://chengwq95.github.io/deepseek-monitor/)** · [Official DeepSeek pricing](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)
 
-- `index.html` 页面结构
-- `style.css` 样式（深色 / 浅色主题）
-- `app.js` 计算逻辑；**价格在文件顶部的 `CONFIG` 里**，调价时只改这一处
-- `favicon.svg` 图标
+## Weekly schedule
 
-## GitHub Pages 部署
+![Weekly peak and off-peak schedule in Beijing time](readme-schedule.svg)
 
-1. 新建仓库，把以上 5 个文件上传到根目录并提交。
-2. 打开 **Settings → Pages**，Build and deployment 选 **Deploy from a branch**，分支选 `main`、目录选 `/ (root)`，点 **Save**。
-3. 稍等片刻，在 Pages 设置页打开显示的网址（通常是 `https://用户名.github.io/仓库名/`）。
+From Monday to Friday, peak hours are **09:00–12:00** and **14:00–18:00**. All other hours and all weekends are off-peak. A transition takes effect at the exact boundary shown. The dashboard uses your device's clock and a fixed UTC+8 offset.
 
-## 规则
+**Holiday limitation:** This is a weekly reference only. It does not recognize Chinese statutory holidays or make-up workdays. DeepSeek states that Chinese statutory holidays are off-peak all day, so the dashboard may show a peak period on a weekday holiday when actual billing is off-peak. Always check the official pricing page for current billing rules.
 
-- 固定北京时间 UTC+8，以设备系统时间为准。
-- 周一至周五 09:00–12:00、14:00–18:00 为高峰；其余时间及周末为空闲。边界时刻归入新时段。
-- 不识别中国法定节假日或调休，也不依赖任何外部数据。官方规定法定节假日全天为空闲，所以节假日落在周一至周五时，页面显示的时段可能与实际计费不同。
-- 价格为静态参考（核对日期见 `CONFIG.priceCheckedOn`），请以 [DeepSeek 官方价格说明](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/) 为准。
-- 页面不连接账户、不读取余额或用量、不需要 API 密钥。
+## Flash and Pro pricing
 
-## 提醒与模拟
+![Flash and Pro prices for cache hits, cache misses and output](readme-pricing.svg)
 
-- “查看指定时间”分别选择年月日、时和分，按北京时间解析，模拟时顶部会显示提示，可随时返回实时；模拟模式不发提醒。
-- 高峰前提醒需要：浏览器支持通知、已允许通知、HTTPS（或 localhost）、页面保持打开。每次重新打开页面需重新开启。
-- 浏览器标签标题会显示当前时段和倒计时，切到其他标签时也能看到。
+The illustrated prices are in **CNY per million tokens** and were checked against the official page on **2026-11-09**. They are static references and may change. The dashboard's prices and check date are maintained in `CONFIG` at the top of `app.js`.
+
+## Features
+
+- Live status, Beijing clock, and a countdown to the next transition, including across weekends.
+- Seven-day schedule, upcoming transitions, and highlighted prices for the current period.
+- A date and time simulator with an explicit simulation indicator.
+- Optional browser notification before peak hours; simulation mode does not send notifications.
+- Responsive layout, light and dark themes, and an icon for the browser tab.
+
+Notifications require a supported browser, permission, HTTPS or localhost, and an open page. Browser background restrictions or device sleep can delay or prevent delivery. Enable the reminder again after reopening the page.
+
+## Run locally
+
+Open `index.html` in a browser. For notifications, serve the folder from `localhost` or use an HTTPS deployment; browser support may vary.
+
+## Deploy on GitHub Pages
+
+1. Upload the project files to the root of a GitHub repository.
+2. In **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/ (root)`, then save.
+3. When deployment completes, open the address shown in the Pages settings.
+
+## Files
+
+- `index.html` — page structure
+- `style.css` — responsive styles and themes
+- `app.js` — schedule, price configuration, simulation, and reminders
+- `favicon.svg` — browser icon
+- `readme-schedule.svg`, `readme-pricing.svg` — README illustrations

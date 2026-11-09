@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+<title id="title">Weekly peak and off-peak schedule</title><desc id="desc">Weekdays are peak from 09:00 to 12:00 and from 14:00 to 18:00 Beijing time. All other hours and weekends are off-peak.</desc>
+<rect width="1200" height="440" rx="28" fill="#0b0c12"/><rect x="18" y="18" width="1164" height="404" rx="22" fill="#13141d" stroke="#292a39"/>
+<text x="58" y="68" fill="#ac9bff" font-family="Arial,sans-serif" font-size="13" font-weight="bold" letter-spacing="3">WEEKLY SCHEDULE · UTC+8</text>
+<text x="58" y="110" fill="#f2f1f8" font-family="Arial,sans-serif" font-size="30" font-weight="bold">Plan around peak hours</text>
+<circle cx="850" cy="101" r="6" fill="#5fd4a0"/><text x="865" y="106" fill="#c3c1d2" font-family="Arial,sans-serif" font-size="16">Off-peak</text><circle cx="985" cy="101" r="6" fill="#ffb35c"/><text x="1000" y="106" fill="#c3c1d2" font-family="Arial,sans-serif" font-size="16">Peak</text>
+<g font-family="Arial,sans-serif" font-size="15" fill="#c3c1d2"><text x="58" y="173">MON – FRI</text><text x="58" y="271">SAT – SUN</text></g>
+<rect x="205" y="146" width="900" height="38" rx="10" fill="#22584b"/><rect x="542.5" y="146" width="112.5" height="38" fill="#ffb35c"/><rect x="730" y="146" width="150" height="38" fill="#ffb35c"/><rect x="205" y="244" width="900" height="38" rx="10" fill="#22584b"/>
+<g fill="#f2f1f8" font-family="Arial,sans-serif" font-size="14" font-weight="bold" text-anchor="middle"><text x="598.75" y="170">09 – 12</text><text x="805" y="170">14 – 18</text><text x="655" y="268">OFF-PEAK ALL DAY</text></g>
+<g fill="#aaa8bd" font-family="Arial,sans-serif" font-size="13" text-anchor="middle"><text x="205" y="214">00:00</text><text x="430" y="214">06:00</text><text x="655" y="214">12:00</text><text x="880" y="214">18:00</text><text x="1105" y="214">24:00</text></g>
+<path d="M58 325H1142" stroke="#292a39"/><text x="58" y="364" fill="#c3c1d2" font-family="Arial,sans-serif" font-size="15">Reference schedule only. Chinese public holidays are not included.</text><text x="58" y="390" fill="#a29db3" font-family="Arial,sans-serif" font-size="13">Official billing treats Chinese statutory holidays as off-peak all day.</text>
+</svg>
