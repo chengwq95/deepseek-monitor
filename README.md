@@ -47,3 +47,7 @@ Open `index.html` in a browser. For notifications, serve the folder from `localh
 - `app.js` — schedule, price configuration, simulation, and reminders
 - `favicon.svg` — browser icon
 - `readme-schedule.svg`, `readme-pricing.svg` — README illustrations
+
+## License
+
+[MIT](LICENSE)
