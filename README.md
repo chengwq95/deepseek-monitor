@@ -48,6 +48,14 @@ Open `index.html` in a browser. For notifications, serve the folder from `localh
 - `favicon.svg` — browser icon
 - `readme-schedule.svg`, `readme-pricing.svg` — README illustrations
 
+## Tests
+
+The schedule logic has unit tests covering peak boundaries, weekends and time-zone independence:
+
+```
+node --test tests/*.test.cjs
+```
+
 ## License
 
 [MIT](LICENSE)
